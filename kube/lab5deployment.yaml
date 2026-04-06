@@ -1,0 +1,194 @@
+# Lab 5 Part 4 – Kubernetes Deployments
+# Replace YOUR_DOCKERHUB_USERNAME with your Docker Hub username
+# Apply: kubectl apply -f lab5deployment.yaml
+
+# ─────────────────────────────────────────────
+# FRONTEND DB
+# ─────────────────────────────────────────────
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: frontenddb-pvc
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontenddb
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: frontenddb}
+  template:
+    metadata:
+      labels: {app: frontenddb}
+    spec:
+      containers:
+        - name: frontenddb
+          image: YOUR_DOCKERHUB_USERNAME/coe692:frontenddb
+          ports: [{containerPort: 3306}]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "student"}
+          volumeMounts:
+            - {mountPath: /var/lib/mysql, name: frontenddb-storage}
+      volumes:
+        - name: frontenddb-storage
+          persistentVolumeClaim:
+            claimName: frontenddb-pvc
+
+---
+# ─────────────────────────────────────────────
+# FRONTEND SERVICE (Tomcat)
+# ─────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: frontend}
+  template:
+    metadata:
+      labels: {app: frontend}
+    spec:
+      containers:
+        - name: frontend
+          image: YOUR_DOCKERHUB_USERNAME/coe692:frontend-v2
+          ports: [{containerPort: 8080}]
+          env:
+            - {name: DB_URL,               value: "frontenddb:3306"}
+            - {name: SEARCH_SERVICE,       value: "searchservice:8080"}
+            - {name: APPOINTMENT_SERVICE,  value: "appointmentservice:8080"}
+            - {name: JWT_SECRET,           value: "dental-system-secret-key-2026-coe692"}
+
+---
+# ─────────────────────────────────────────────
+# SEARCH DB
+# ─────────────────────────────────────────────
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: searchdb-pvc
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: searchdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: searchdb}
+  template:
+    metadata:
+      labels: {app: searchdb}
+    spec:
+      containers:
+        - name: searchdb
+          image: YOUR_DOCKERHUB_USERNAME/coe692:searchdb
+          ports: [{containerPort: 3306}]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "student"}
+          volumeMounts:
+            - {mountPath: /var/lib/mysql, name: searchdb-storage}
+      volumes:
+        - name: searchdb-storage
+          persistentVolumeClaim:
+            claimName: searchdb-pvc
+
+---
+# ─────────────────────────────────────────────
+# SEARCH SERVICE (Tomcat)
+# ─────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: searchservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: searchservice}
+  template:
+    metadata:
+      labels: {app: searchservice}
+    spec:
+      containers:
+        - name: searchservice
+          image: YOUR_DOCKERHUB_USERNAME/coe692:searchservice
+          ports: [{containerPort: 8080}]
+          env:
+            - {name: DB_URL,      value: "searchdb:3306"}
+            - {name: JWT_SECRET,  value: "dental-system-secret-key-2026-coe692"}
+
+---
+# ─────────────────────────────────────────────
+# APPOINTMENT DB
+# ─────────────────────────────────────────────
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: appointmentdb-pvc
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appointmentdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: appointmentdb}
+  template:
+    metadata:
+      labels: {app: appointmentdb}
+    spec:
+      containers:
+        - name: appointmentdb
+          image: YOUR_DOCKERHUB_USERNAME/coe692:appointmentdb
+          ports: [{containerPort: 3306}]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "student"}
+          volumeMounts:
+            - {mountPath: /var/lib/mysql, name: appointmentdb-storage}
+      volumes:
+        - name: appointmentdb-storage
+          persistentVolumeClaim:
+            claimName: appointmentdb-pvc
+
+---
+# ─────────────────────────────────────────────
+# APPOINTMENT SERVICE (Tomcat)
+# ─────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appointmentservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: appointmentservice}
+  template:
+    metadata:
+      labels: {app: appointmentservice}
+    spec:
+      containers:
+        - name: appointmentservice
+          image: YOUR_DOCKERHUB_USERNAME/coe692:appointmentservice-v2
+          ports: [{containerPort: 8080}]
+          env:
+            - {name: DB_URL,         value: "appointmentdb:3306"}
+            - {name: kubeMQAddress,  value: "kubemq-cluster-grpc.kubemq:50000"}
+            - {name: JWT_SECRET,     value: "dental-system-secret-key-2026-coe692"}

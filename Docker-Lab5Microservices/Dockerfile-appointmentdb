@@ -1,0 +1,4 @@
+FROM mysql:8.0.23
+ENV MYSQL_ROOT_PASSWORD=student
+COPY appointment_dental_db.sql /docker-entrypoint-initdb.d/
+EXPOSE 3306

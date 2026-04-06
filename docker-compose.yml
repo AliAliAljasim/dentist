@@ -1,0 +1,98 @@
+services:
+
+  # ── MESSAGING ──────────────────────────────────────────
+
+  kubemq:
+    image: kubemq/kubemq-community:latest
+    ports:
+      - "50000:50000"
+
+  # ── DATABASES ──────────────────────────────────────────
+
+  frontenddb:
+    build:
+      context: ./Docker-Lab5Microservices
+      dockerfile: Dockerfile-frontenddb
+    environment:
+      MYSQL_ROOT_PASSWORD: student
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-uroot", "-pstudent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  searchdb:
+    build:
+      context: ./Docker-Lab5Microservices
+      dockerfile: Dockerfile-searchdb
+    environment:
+      MYSQL_ROOT_PASSWORD: student
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-uroot", "-pstudent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  appointmentdb:
+    build:
+      context: ./Docker-Lab5Microservices
+      dockerfile: Dockerfile-appointmentdb
+    environment:
+      MYSQL_ROOT_PASSWORD: student
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-uroot", "-pstudent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── SERVICES ───────────────────────────────────────────
+
+  search-service:
+    build:
+      context: ./Docker-Lab5Microservices
+      dockerfile: Dockerfile-searchservice
+    ports:
+      - "8082:8080"
+    environment:
+      DB_URL: searchdb:3306
+      JWT_SECRET: dental-system-secret-key-2026-coe692
+    depends_on:
+      searchdb:
+        condition: service_healthy
+
+  appointment-service:
+    build:
+      context: ./Docker-Lab5Microservices
+      dockerfile: Dockerfile-appointmentservice
+    ports:
+      - "8081:8080"
+    environment:
+      DB_URL: appointmentdb:3306
+      JWT_SECRET: dental-system-secret-key-2026-coe692
+      kubeMQAddress: kubemq-host:50000
+    extra_hosts:
+      - "kubemq-host:host-gateway"
+    depends_on:
+      kubemq:
+        condition: service_started
+      appointmentdb:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./Docker-Lab5Microservices
+      dockerfile: Dockerfile-frontend
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: frontenddb:3306
+      SEARCH_SERVICE: search-service:8080
+      APPOINTMENT_SERVICE: appointment-service:8080
+      JWT_SECRET: dental-system-secret-key-2026-coe692
+    depends_on:
+      frontenddb:
+        condition: service_healthy
+      search-service:
+        condition: service_started
+      appointment-service:
+        condition: service_started

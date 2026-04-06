@@ -1,0 +1,63 @@
+# Lab 5 Part 4 – Kubernetes Services
+# Apply: kubectl apply -f lab5service.yaml
+
+# Internal database services (ClusterIP – not exposed externally)
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontenddb
+spec:
+  selector: {app: frontenddb}
+  ports: [{port: 3306, targetPort: 3306}]
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: searchdb
+spec:
+  selector: {app: searchdb}
+  ports: [{port: 3306, targetPort: 3306}]
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appointmentdb
+spec:
+  selector: {app: appointmentdb}
+  ports: [{port: 3306, targetPort: 3306}]
+  type: ClusterIP
+
+---
+# Internal backend service (ClusterIP – called only by frontend)
+apiVersion: v1
+kind: Service
+metadata:
+  name: searchservice
+spec:
+  selector: {app: searchservice}
+  ports: [{port: 8080, targetPort: 8080}]
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appointmentservice
+spec:
+  selector: {app: appointmentservice}
+  ports: [{port: 8080, targetPort: 8080}]
+  type: ClusterIP
+
+---
+# Public LoadBalancer – this is the entry point for the TA to test
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  selector: {app: frontend}
+  ports:
+    - port: 80
+      targetPort: 8080
+  type: LoadBalancer

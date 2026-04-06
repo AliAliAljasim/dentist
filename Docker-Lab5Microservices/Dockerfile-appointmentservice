@@ -1,0 +1,5 @@
+FROM tomcat:8.5-jdk11-openjdk
+# Build: cd appointment-service && mvn clean package
+# Then: cp target/appointment-service.war ../Docker-Lab5Microservices/
+COPY ./appointment-service.war /usr/local/tomcat/webapps/appointment-service.war
+EXPOSE 8080

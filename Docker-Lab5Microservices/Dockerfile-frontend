@@ -1,0 +1,5 @@
+FROM tomcat:8.5-jdk11-openjdk
+# Build: cd frontend && mvn clean package
+# Then: cp target/frontend.war ../Docker-Lab5Microservices/
+COPY ./frontend.war /usr/local/tomcat/webapps/frontend.war
+EXPOSE 8080

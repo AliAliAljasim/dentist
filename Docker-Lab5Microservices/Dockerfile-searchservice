@@ -1,0 +1,5 @@
+FROM tomcat:8.5-jdk11-openjdk
+# Build: cd search-service && mvn clean package
+# Then: cp target/search-service.war ../Docker-Lab5Microservices/
+COPY ./search-service.war /usr/local/tomcat/webapps/search-service.war
+EXPOSE 8080
