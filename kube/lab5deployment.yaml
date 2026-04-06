@@ -58,7 +58,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: YOUR_DOCKERHUB_USERNAME/coe692:frontend-v2
+          image: YOUR_DOCKERHUB_USERNAME/coe692:frontend-v4
           ports: [{containerPort: 8080}]
           env:
             - {name: DB_URL,               value: "frontenddb:3306"}

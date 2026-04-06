@@ -115,7 +115,7 @@
   <div class="branding">
     <div class="tooth-icon">🦷</div>
     <h1>DentalCare System</h1>
-    <p>Your complete dental practice management platform. Schedule appointments, search dentists, and track billing — all in one place.</p>
+    <p>Your complete dental practice management platform. Schedule appointments, search dentists, and track billings.</p>
     <ul class="features">
       <li>Book & manage appointments</li>
       <li>Search dentist specialists</li>

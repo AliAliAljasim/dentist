@@ -1,0 +1,11 @@
+Rebuild Docker Image
+docker build -f .\Docker-Lab5Microservices\Dockerfile-frontend -t alialjasim/coe692:frontend-v3 .\Docker-Lab5Microservices
+docker push alialjasim/coe692:frontend-v3
+
+update lab5deployment.yaml
+powershell -ExecutionPolicy Bypass -File .\kube\apply-lab5.ps1 -DockerHubUsername alialjasim -RenderOnly
+
+Apply to JKE
+kubectl apply -f .\kube\rendered\lab5deployment.yaml
+kubectl rollout restart deployment/frontend
+kubectl rollout status deployment/frontend
