@@ -1,8 +1,0 @@
-Persistence\DBConnection.class
-endpoint\JWTFilter.class
-endpoint\JWTUtil.class
-endpoint\DentistEndpoint.class
-Helper\DentistInfo.class
-endpoint\ApplicationConfig.class
-Persistence\Dentist_CRUD.class
-Business\DentistManager.class
