@@ -115,7 +115,7 @@
   <div class="branding">
     <div class="tooth-icon">🦷</div>
     <h1>DentalCare System</h1>
-    <p>Test.</p>
+    <p>Full working dental app.</p>
     <ul class="features">
       <li>Book & manage appointments</li>
       <li>Search dentist specialists</li>
