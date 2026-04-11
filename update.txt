@@ -1,6 +1,6 @@
 Rebuild Docker Image
-docker build -f .\Docker-Lab5Microservices\Dockerfile-frontend -t alialjasim/coe692:frontend-v3 .\Docker-Lab5Microservices
-docker push alialjasim/coe692:frontend-v3
+docker build -f .\Docker-Lab5Microservices\Dockerfile-frontend -t alialjasim/coe692:frontend-v7 .\Docker-Lab5Microservices
+docker push alialjasim/coe692:frontend-v7
 
 update lab5deployment.yaml
 powershell -ExecutionPolicy Bypass -File .\kube\apply-lab5.ps1 -DockerHubUsername alialjasim -RenderOnly
